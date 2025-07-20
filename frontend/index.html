@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Dashboard de Trabajos</title>
   <style>
+    /* ... tu CSS sin cambios ... */
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #eef2f7;
       margin: 0;
       padding: 40px 20px;
     }
-
     h1, h2 {
       text-align: center;
       color: #2c3e50;
     }
-
     .container {
       max-width: 1000px;
       margin: auto;
@@ -24,7 +23,6 @@
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
-
     button {
       padding: 12px 20px;
       background: #007BFF;
@@ -35,41 +33,34 @@
       margin-top: 10px;
       transition: background 0.2s ease;
     }
-
     button:hover {
       background: #0056cc;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 30px;
       background: #fefefe;
     }
-
     th {
       background: #007BFF;
       color: white;
       padding: 12px;
       text-transform: uppercase;
     }
-
     td {
       padding: 12px;
       border-bottom: 1px solid #ddd;
     }
-
     tr:nth-child(even) {
       background: #f9f9f9;
     }
-
     .form-section {
       display: none;
       margin-top: 40px;
       padding-top: 20px;
       border-top: 2px solid #ccc;
     }
-
     input, select, textarea {
       padding: 10px;
       width: 100%;
@@ -79,49 +70,39 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
-
     label {
       font-weight: bold;
       color: #444;
     }
-
     .flex {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
       margin-top: 20px;
     }
-
     .flex > div {
       flex: 1;
       min-width: 200px;
     }
-
     .form-section form {
       margin-top: 20px;
     }
-
     .btn-primary {
       background: #28a745;
     }
-
     .btn-primary:hover {
       background: #218838;
     }
-
     .btn-secondary {
       background: #6c757d;
     }
-
     .btn-secondary:hover {
       background: #5a6268;
     }
-
     .filtro-boton {
       text-align: center;
       margin-top: 20px;
     }
-
     .filtro-boton button {
       background-color: #0056cc;
       padding: 12px 30px;
@@ -129,11 +110,9 @@
       font-size: 16px;
       font-weight: bold;
     }
-
     .filtro-boton button:hover {
       background-color: #036bfd;
     }
-
     /* Estilos login */
     .login-box {
       max-width: 400px;
@@ -144,197 +123,203 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       text-align: center;
     }
-
     .login-box input {
       margin: 10px 0;
     }
   </style>
 </head>
 <body>
-<div id="login-container" class="login-box">
-  <h2>Iniciar Sesión</h2>
-  <input type="text" id="usuario" placeholder="Usuario" />
-  <input type="password" id="contrasena" placeholder="Contraseña" />
-  <button onclick="login()">Ingresar</button>
-</div>
+  <div id="login-container" class="login-box">
+    <h2>Iniciar Sesión</h2>
+    <input type="text" id="usuario" placeholder="Usuario" />
+    <input type="password" id="contrasena" placeholder="Contraseña" />
+    <button onclick="login()">Ingresar</button>
+  </div>
 
-<div id="app-container" style="display:none">
-  <div class="container">
-    <h1>Tabla de Trabajos</h1>
+  <div id="app-container" style="display:none">
+    <div class="container">
+      <h1>Tabla de Trabajos</h1>
 
-    <div class="flex">
-      <div>
-        <label>Base de datos:</label>
-        <select id="filtroTipo" onchange="cargarTrabajos()">
-          <option value="Piscinas">Piscinas</option>
-          <option value="Camaras">Cámaras</option>
-        </select>
+      <div class="flex">
+        <div>
+          <label>Base de datos:</label>
+          <select id="filtroTipo" onchange="cargarTrabajos()">
+            <option value="Piscinas">Piscinas</option>
+            <option value="Camaras">Cámaras</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Filtrar por trabajador:</label>
+          <input type="text" id="filtroQuien" placeholder="Nombre exacto o parcial" />
+        </div>
+
+        <div>
+          <label>Filtrar por cliente:</label>
+          <input type="text" id="filtroCliente" placeholder="Nombre exacto o parcial" />
+        </div>
+
+        <div>
+          <label>Desde:</label>
+          <input type="date" id="filtroDesde" />
+        </div>
+
+        <div>
+          <label>Hasta:</label>
+          <input type="date" id="filtroHasta" />
+        </div>
       </div>
 
-      <div>
-        <label>Filtrar por trabajador:</label>
-        <input type="text" id="filtroQuien" placeholder="Nombre exacto o parcial">
+      <div class="filtro-boton">
+        <button onclick="cargarTrabajos()">Aplicar filtros</button>
       </div>
 
-      <div>
-        <label>Filtrar por cliente:</label>
-        <input type="text" id="filtroCliente" placeholder="Nombre exacto o parcial">
+      <table id="tablaTrabajos">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Trabajador</th>
+            <th>Cliente</th>
+            <th>Gastos</th>
+            <th>Precio</th>
+            <th>Fecha</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <button onclick="mostrarFormulario()" class="btn-primary">Agregar trabajo</button>
+
+      <div class="form-section" id="formulario">
+        <h2>Registrar Trabajo</h2>
+        <form id="trabajoForm">
+          <label>Tipo de trabajo:</label>
+          <select name="tipo" required>
+            <option value="">Seleccione...</option>
+            <option value="Piscinas">Piscinas</option>
+            <option value="Camaras">Camaras</option>
+          </select>
+
+          <label>Quién hizo el trabajo:</label>
+          <input type="text" name="quien" required />
+
+          <label>Nombre del cliente:</label>
+          <input type="text" name="cliente" required />
+
+          <label>Descripción (opcional):</label>
+          <textarea name="descripcion" rows="3"></textarea>
+
+          <label>Gastos:</label>
+          <input type="number" step="0.01" name="gastos" required />
+
+          <label>Precio:</label>
+          <input type="number" step="0.01" name="precio" required />
+
+          <label>Fecha de trabajo:</label>
+          <input type="date" name="fecha_trabajo" required />
+
+          <button type="submit" class="btn-primary">Guardar</button>
+        </form>
       </div>
-
-      <div>
-        <label>Desde:</label>
-        <input type="date" id="filtroDesde">
-      </div>
-
-      <div>
-        <label>Hasta:</label>
-        <input type="date" id="filtroHasta">
-      </div>
-    </div>
-
-    <div class="filtro-boton">
-      <button onclick="cargarTrabajos()">Aplicar filtros</button>
-    </div>
-
-    <table id="tablaTrabajos">
-      <thead>
-        <tr>
-          <th>Tipo</th>
-          <th>Trabajador</th>
-          <th>Cliente</th>
-          <th>Gastos</th>
-          <th>Precio</th>
-          <th>Fecha</th>
-          <th>Descripción</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <button onclick="mostrarFormulario()" class="btn-primary">Agregar trabajo</button>
-
-    <div class="form-section" id="formulario">
-      <h2>Registrar Trabajo</h2>
-      <form id="trabajoForm">
-        <label>Tipo de trabajo:</label>
-        <select name="tipo" required>
-          <option value="">Seleccione...</option>
-          <option value="Piscinas">Piscinas</option>
-          <option value="Camaras">Camaras</option>
-        </select>
-
-        <label>Quién hizo el trabajo:</label>
-        <input type="text" name="quien" required />
-
-        <label>Nombre del cliente:</label>
-        <input type="text" name="cliente" required />
-
-        <label>Descripción (opcional):</label>
-        <textarea name="descripcion" rows="3"></textarea>
-
-        <label>Gastos:</label>
-        <input type="number" step="0.01" name="gastos" required />
-
-        <label>Precio:</label>
-        <input type="number" step="0.01" name="precio" required />
-
-        <label>Fecha de trabajo:</label>
-        <input type="date" name="fecha_trabajo" required />
-
-        <button type="submit" class="btn-primary">Guardar</button>
-      </form>
     </div>
   </div>
-</div>
 
-<script>
-  let token = null;
+  <script>
+    const API_URL = "https://bluewave-backend-4vmy.onrender.com"; // Cambia por tu URL real
 
-  function login() {
-    const u = document.getElementById("usuario").value;
-    const p = document.getElementById("contrasena").value;
-    if (u === "default" && p === "password") {
-      token = "password";
-      document.getElementById("login-container").style.display = "none";
-      document.getElementById("app-container").style.display = "block";
-      cargarTrabajos();
-    } else {
-      alert("Usuario o contraseña incorrectos");
-    }
-  }
+    let token = null;
 
-  function mostrarFormulario() {
-    document.getElementById("formulario").style.display = "block";
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  }
-
-  async function cargarTrabajos() {
-    const tipo = document.getElementById("filtroTipo").value;
-    const quien = document.getElementById("filtroQuien").value;
-    const cliente = document.getElementById("filtroCliente").value;
-    const desde = document.getElementById("filtroDesde").value;
-    const hasta = document.getElementById("filtroHasta").value;
-
-    let url = `http://localhost:3001/api/trabajos/buscar?tipo=${tipo}`;
-    if (quien) url += `&quien=${encodeURIComponent(quien)}`;
-    if (cliente) url += `&cliente=${encodeURIComponent(cliente)}`;
-    if (desde) url += `&desde=${desde}`;
-    if (hasta) url += `&hasta=${hasta}`;
-
-    const res = await fetch(url, {
-      headers: { 'x-auth-token': token }
-    });
-    const trabajos = await res.json();
-    const tbody = document.querySelector("#tablaTrabajos tbody");
-    tbody.innerHTML = "";
-
-    if (trabajos.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='7'>No hay resultados</td></tr>";
-      return;
-    }
-
-    trabajos.forEach(t => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${t.tipo}</td>
-          <td>${t.quien}</td>
-          <td>${t.cliente}</td>
-          <td>${t.gastos}</td>
-          <td>${t.precio}</td>
-          <td>${t.fecha_trabajo}</td>
-          <td>${t.descripcion || ''}</td>
-        </tr>
-      `;
-    });
-  }
-
-  document.getElementById("trabajoForm")?.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const data = Object.fromEntries(formData.entries());
-
-    try {
-      const res = await fetch("http://localhost:3001/api/trabajos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-auth-token": token
-        },
-        body: JSON.stringify(data)
-      });
-      const result = await res.json();
-      if (res.ok) {
-        alert("Trabajo guardado correctamente.");
-        this.reset();
-        document.getElementById("formulario").style.display = "none";
+    function login() {
+      const u = document.getElementById("usuario").value;
+      const p = document.getElementById("contrasena").value;
+      if (u === "default" && p === "password") {
+        token = "password";
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("app-container").style.display = "block";
         cargarTrabajos();
       } else {
-        alert("Error al guardar: " + (result.error || "desconocido."));
+        alert("Usuario o contraseña incorrectos");
       }
-    } catch (err) {
-      alert("Error al conectar con el servidor.");
     }
-  });
-</script>
+
+    function mostrarFormulario() {
+      document.getElementById("formulario").style.display = "block";
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    async function cargarTrabajos() {
+      const tipo = document.getElementById("filtroTipo").value;
+      const quien = document.getElementById("filtroQuien").value;
+      const cliente = document.getElementById("filtroCliente").value;
+      const desde = document.getElementById("filtroDesde").value;
+      const hasta = document.getElementById("filtroHasta").value;
+
+      let url = `${API_URL}/trabajos/buscar?tipo=${tipo}`;
+      if (quien) url += `&quien=${encodeURIComponent(quien)}`;
+      if (cliente) url += `&cliente=${encodeURIComponent(cliente)}`;
+      if (desde) url += `&desde=${desde}`;
+      if (hasta) url += `&hasta=${hasta}`;
+
+      try {
+        const res = await fetch(url, {
+          headers: { "x-auth-token": token }
+        });
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        const trabajos = await res.json();
+        const tbody = document.querySelector("#tablaTrabajos tbody");
+        tbody.innerHTML = "";
+
+        if (trabajos.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='7'>No hay resultados</td></tr>";
+          return;
+        }
+
+        trabajos.forEach(t => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${t.tipo}</td>
+              <td>${t.quien}</td>
+              <td>${t.cliente}</td>
+              <td>${t.gastos}</td>
+              <td>${t.precio}</td>
+              <td>${t.fecha_trabajo}</td>
+              <td>${t.descripcion || ''}</td>
+            </tr>
+          `;
+        });
+      } catch (err) {
+        alert("Error al cargar trabajos: " + err.message);
+      }
+    }
+
+    document.getElementById("trabajoForm")?.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch(`${API_URL}/trabajos`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          alert("Trabajo guardado correctamente.");
+          this.reset();
+          document.getElementById("formulario").style.display = "none";
+          cargarTrabajos();
+        } else {
+          alert("Error al guardar: " + (result.error || "desconocido."));
+        }
+      } catch (err) {
+        alert("Error al conectar con el servidor.");
+      }
+    });
+  </script>
 </body>
 </html>
