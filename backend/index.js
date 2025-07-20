@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import { Sequelize, DataTypes, Op } from "sequelize";
@@ -6,8 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔐 Middleware de autenticación
-const AUTH_TOKEN = "password"; // <- Cambiá esto por algo privado
+// 🔐 Autenticación
+const AUTH_TOKEN = process.env.AUTH_TOKEN;
 app.use((req, res, next) => {
   const token = req.headers['x-auth-token'];
   if (token !== AUTH_TOKEN) {
@@ -16,17 +17,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// 🗄️ Conexiones a las bases
 const dbs = {
-  Piscinas: new Sequelize("BlueWave", "root", "root", {
-    host: "localhost",
-    dialect: "mysql",
-  }),
-  Camaras: new Sequelize("JQ_Seguridad", "root", "root", {
-    host: "localhost",
-    dialect: "mysql",
-  })
+  Piscinas: new Sequelize(process.env.DB_BLUEWAVE, { dialect: "mysql" }),
+  Camaras: new Sequelize(process.env.DB_JQSEGURIDAD, { dialect: "mysql" })
 };
 
+// 📦 Modelo de trabajos
 const defineTrabajoModel = (sequelize) => sequelize.define("Trabajos", {
   tipo: DataTypes.STRING,
   quien: DataTypes.STRING,
@@ -42,6 +39,7 @@ const trabajosModels = {
   Camaras: defineTrabajoModel(dbs.Camaras)
 };
 
+// 🔍 Buscar trabajos
 app.get("/api/trabajos/buscar", async (req, res) => {
   const { tipo, quien, cliente, desde, hasta } = req.query;
   const db = dbs[tipo];
@@ -69,16 +67,17 @@ app.get("/api/trabajos/buscar", async (req, res) => {
   }
 });
 
+// ➕ Crear trabajo
 app.post("/api/trabajos", async (req, res) => {
   const { tipo, quien, cliente, descripcion, gastos, precio, fecha_trabajo } = req.body;
+  const db = dbs[tipo];
+  const Trabajo = trabajosModels[tipo];
 
-  if (!tipo || !trabajosModels[tipo]) {
+  if (!tipo || !Trabajo) {
     return res.status(400).json({ error: "Tipo inválido" });
   }
 
   try {
-    const db = dbs[tipo];
-    const Trabajo = trabajosModels[tipo];
     await db.authenticate();
     await db.sync();
 
@@ -98,6 +97,8 @@ app.post("/api/trabajos", async (req, res) => {
   }
 });
 
-app.listen(3001, () => {
-  console.log("Servidor backend en http://localhost:3001");
+// ▶️ Iniciar servidor
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+  console.log(`Servidor backend en http://localhost:${port}`);
 });
