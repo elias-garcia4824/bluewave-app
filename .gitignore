@@ -1,0 +1,9 @@
+# Evitar subir dependencias, builds, configs locales, etc.
+
+node_modules/
+dist/
+.env
+.DS_Store
+*.log
+.vscode/
+*.local
