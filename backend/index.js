@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import { Sequelize, Op } from "sequelize";
-import TrabajoBluewave from "./models/TrabajoBlueWave.js";
+import TrabajoBluewave from "./models/TrabajoBluewave.js";
 import TrabajoSeguridad from "./models/TrabajoSeguridad.js";
 
 const app = express();
