@@ -1,7 +1,9 @@
 import 'dotenv/config';
 import express from "express";
 import cors from "cors";
-import { Sequelize, DataTypes, Op } from "sequelize";
+import { Sequelize, Op } from "sequelize";
+import TrabajoBluewave from "./models/TrabajoBluewave.js";
+import TrabajoSeguridad from "./models/TrabajoSeguridad.js";
 
 const app = express();
 app.use(cors());
@@ -17,34 +19,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// 🗄️ Conexiones a las bases
-const dbs = {
-  Piscinas: new Sequelize(process.env.DB_BLUEWAVE, { dialect: "mysql" }),
-  Camaras: new Sequelize(process.env.DB_JQSEGURIDAD, { dialect: "mysql" })
-};
-
-// 📦 Modelo de trabajos
-const defineTrabajoModel = (sequelize) => sequelize.define("Trabajos", {
-  tipo: DataTypes.STRING,
-  quien: DataTypes.STRING,
-  cliente: DataTypes.STRING,
-  descripcion: DataTypes.TEXT,
-  gastos: DataTypes.DECIMAL(10, 2),
-  precio: DataTypes.DECIMAL(10, 2),
-  fecha_trabajo: DataTypes.DATEONLY
-});
-
-const trabajosModels = {
-  Piscinas: defineTrabajoModel(dbs.Piscinas),
-  Camaras: defineTrabajoModel(dbs.Camaras)
+// 📦 Diccionario de modelos según tipo
+const modelos = {
+  Piscinas: TrabajoBluewave,
+  Camaras: TrabajoSeguridad
 };
 
 // 🔍 Buscar trabajos
 app.get("/api/trabajos/buscar", async (req, res) => {
   const { tipo, quien, cliente, desde, hasta } = req.query;
-  const db = dbs[tipo];
-  const Trabajo = trabajosModels[tipo];
-  if (!db || !Trabajo) return res.status(400).json({ error: "Tipo inválido" });
+  const Trabajo = modelos[tipo];
+  if (!Trabajo) return res.status(400).json({ error: "Tipo inválido" });
 
   const where = {};
   if (quien) where.quien = { [Op.like]: `%${quien}%` };
@@ -58,8 +43,6 @@ app.get("/api/trabajos/buscar", async (req, res) => {
   }
 
   try {
-    await db.authenticate();
-    await db.sync();
     const trabajos = await Trabajo.findAll({ where, order: [["fecha_trabajo", "DESC"]] });
     res.json(trabajos);
   } catch (error) {
@@ -70,17 +53,13 @@ app.get("/api/trabajos/buscar", async (req, res) => {
 // ➕ Crear trabajo
 app.post("/api/trabajos", async (req, res) => {
   const { tipo, quien, cliente, descripcion, gastos, precio, fecha_trabajo } = req.body;
-  const db = dbs[tipo];
-  const Trabajo = trabajosModels[tipo];
+  const Trabajo = modelos[tipo];
 
   if (!tipo || !Trabajo) {
     return res.status(400).json({ error: "Tipo inválido" });
   }
 
   try {
-    await db.authenticate();
-    await db.sync();
-
     const nuevoTrabajo = await Trabajo.create({
       tipo,
       quien,
@@ -99,6 +78,13 @@ app.post("/api/trabajos", async (req, res) => {
 
 // ▶️ Iniciar servidor
 const port = process.env.PORT || 3001;
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Servidor backend en http://localhost:${port}`);
+  try {
+    await TrabajoBluewave.sync({ alter: true });
+    await TrabajoSeguridad.sync({ alter: true });
+    console.log("Tablas sincronizadas correctamente");
+  } catch (err) {
+    console.error("Error al sincronizar tablas:", err);
+  }
 });
